@@ -19,18 +19,31 @@ io.on("connection", (socket) => {
 	const id = socket.id
 	socket.on("create", (username, callback) => {
 		//檢查user是否存在
-		//存在 ? 提醒已存在 | 加入users
+		//存在 ? 提醒已存在 : 加入users
 		const existingUser = users.find((user) => user.username === username)
-		console.log(existingUser)
 
 		if (existingUser) return callback("This username is been taken!")
-		console.log(`${id} is create username ${username}`)
 		const user = { id, username }
-
 		users.push(user)
+		
+		console.log(`${id} create ${username}`)
 
-		console.log(`All user: ${users.map(user => `${user.id} ${user.username}`)}`)
+		socket.emit("send_users", users)
 	})
+
+	socket.on("disconnect", () => {
+		const id = socket.id
+		
+		const index = users.findIndex((user) => user.id === id)
+
+		if (index !== -1) {
+			users.splice(index, 1)[0]
+		}
+
+		console.log(`${id} leave`)
+	})
+
+	
 })
 
 
