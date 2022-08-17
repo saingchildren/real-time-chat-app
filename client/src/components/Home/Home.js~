@@ -1,22 +1,31 @@
-import React, { useState, useEffect } from "react"
-import { useContextSelector } from "use-context-selector"
-import Context from "../../context/Context"
-import ShowUsers from "./ShowUsers"
+import React, { useState, useEffect } from "react";
+import { useContextSelector } from "use-context-selector";
+import Context from "../../context/Context";
+import ShowUsers from "./ShowUsers";
 
-export default function Home () {
+export default function Home() {
+    const socket = useContextSelector(Context, (item) => item.socket);
+    const [allusers, setAllusers] = useState("");
 
-	const socket = useContextSelector(Context, item => item.socket)
-	const [ allusers, setAllUsers ] = useState(null)
+    useEffect(() => {
+        socket.on("send_users", (users) => {
+            console.log("users");
+        });
 
-	socket.on("send_users", (users) => {
-		setAllUsers(users)
-		console.log(`allusers: ${allusers}`)
-		console.log(`get users: ${users.map(user => user.id + ", "+ user.username)}`)
-	})	
+        return () => {
+            socket.off("send_users");
+        };
+    }, []);
 
-	return (
-		<>
-			<ShowUsers allusers={allusers} />
-		</>
-	)
+    return (
+        <>
+            <button
+                onClick={() => {
+                    console.log(allusers);
+                }}
+            >
+                show
+            </button>
+        </>
+    );
 }
