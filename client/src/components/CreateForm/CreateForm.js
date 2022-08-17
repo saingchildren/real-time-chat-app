@@ -3,9 +3,11 @@ import UserName from "./UserName"
 import { Form, Container, Row, Col, Button } from "react-bootstrap"
 import Context from "../../context/Context"
 import { useContextSelector } from "use-context-selector"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 export default function CreateForm () {
+
+	let navigate = useNavigate()
 
 	const username = useContextSelector(Context, item => item.username)
 	const socket = useContextSelector(Context, item => item.socket)
@@ -15,13 +17,11 @@ export default function CreateForm () {
 		if (!username) {
 			e.preventDefault()
 			alert("plz input username!")
-		}
-
-		if (username) {
+		} else {
 			socket.emit("create", username, (error) => {
 				if (error) {
-					e.preventDefault()
 					alert(error)
+					navigate("/")
 				}
 			})
 		}
