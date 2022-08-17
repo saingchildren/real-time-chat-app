@@ -1,50 +1,52 @@
-const http = require("http")
-const express = require("express")
-const app = express()
-const socketio = require("socket.io")
-const cors = require("cors")
-const server = http.createServer(app)
+const http = require("http");
+const express = require("express");
+const app = express();
+const socketio = require("socket.io");
+const cors = require("cors");
+const server = http.createServer(app);
 const io = socketio(server, {
-	cors: {
-		origin: "*"
-	}
-})
+    cors: {
+        origin: "*",
+    },
+});
 
-const users = []
+const users = [];
 
-app.use(cors())
+app.use(cors());
 
 io.on("connection", (socket) => {
-	console.log(socket.id)
-	const id = socket.id
-	socket.on("create", (username, callback) => {
-		//檢查user是否存在
-		//存在 ? 提醒已存在 : 加入users
-		const existingUser = users.find((user) => user.username === username)
+    console.log(socket.id);
+    const id = socket.id;
+    socket.on("create", (username, callback) => {
+        //檢查user是否存在
+        //存在 ? 提醒已存在 : 加入users && 將users給前端
+        const existingUser = users.find((user) => user.username === username);
 
-		if (existingUser) return callback("This username is been taken!")
-		const user = { id, username }
-		users.push(user)
-		
-		console.log(`${id} create ${username}`)
+        if (existingUser) return callback("This username is been taken!");
+        const user = { id, username };
+        users.push(user);
+        console.log(`${id} create ${username}`);
 
-		socket.emit("send_users", users)
-	})
+        socket.emit("send_users", users);
+    });
 
-	socket.on("disconnect", () => {
-		const id = socket.id
-		
-		const index = users.findIndex((user) => user.id === id)
+    socket.on("disconnect", () => {
+        const id = socket.id;
 
-		if (index !== -1) {
-			users.splice(index, 1)[0]
-		}
+        const index = users.findIndex((user) => user.id === id);
 
-		console.log(`${id} leave`)
-	})
+        if (index !== -1) {
+            users.splice(index, 1)[0];
+        }
 
-	
-})
+        console.log(`${id} leave`);
+    });
 
+    socket.on("send_users", () => {
+        socket.emit("test", users);
+    });
+});
 
-server.listen(process.env.PORT || 3300, () => { console.log(`running in 3300`) })
+server.listen(process.env.PORT || 3300, () => {
+    console.log(`running in 3300`);
+});
