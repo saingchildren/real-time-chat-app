@@ -1,12 +1,29 @@
-import React from "react"
+import React, { useState, useEffect } from "react";
+import Context from "../../context/Context";
+import { useContextSelector } from "use-context-selector";
 
-export default function ShowUsers ({ allusers }) {
+export default function ShowUsers() {
 
-	console.log(`showuser ${allusers}`)
+	const socket = useContextSelector(Context, item => item.socket)
+	const [ alluser, setAlluser ] = useState([])
+
+	const get_data = () => {
+		socket.on("send_data", (users) => {
+			setAlluser(users)
+		})
+	}
+
+	useEffect(() => {
+		get_data()
+		console.log(alluser)
+		return () => {
+			socket.off("send_data")
+		}
+	})
 
 	return (
-		<div>
-			{allusers.map((user) => `${user.id} ${user.username}`)}
+		<div style={{ background: "white" }}>
+			{alluser.length}
 		</div>
 	)
 }
