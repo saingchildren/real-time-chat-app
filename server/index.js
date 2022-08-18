@@ -27,7 +27,9 @@ io.on("connection", (socket) => {
         users.push(user);
         console.log(`${id} create ${username}`);
 
-        socket.emit("send_users", users);
+        socket.on("load_users", () => {
+            io.emit("send_users", users);
+        });
     });
 
     socket.on("disconnect", () => {
@@ -38,8 +40,7 @@ io.on("connection", (socket) => {
         if (index !== -1) {
             users.splice(index, 1)[0];
         }
-
-        console.log(`${id} leave`);
+        io.emit("send_users", users);
     });
 });
 
