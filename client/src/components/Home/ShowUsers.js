@@ -18,5 +18,13 @@ export default function ShowUsers() {
         console.log(alluser);
     }, []);
 
-    return <div style={{ background: "white" }}>{alluser.length}</div>;
+    return (
+        <div style={{ background: "white" }}>
+            {alluser.map((user) => (
+                <p>
+                    {user.id} {user.username}
+                </p>
+            ))}
+        </div>
+    );
 }
