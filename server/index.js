@@ -42,6 +42,18 @@ io.on("connection", (socket) => {
         }
         io.emit("send_users", users);
     });
+
+    socket.on("send_msg", ({ receiver, message }) => {
+        const sender = users.find((user) => user.id === socket.id);
+        const receiverId = users.find((user) => user.username === receiver);
+        console.log(
+            `${sender.username} send ${message} to ${receiverId.username}`
+        );
+        io.to(receiverId.id).emit("get_msg", {
+            sender: sender.username,
+            msg: message,
+        });
+    });
 });
 
 server.listen(process.env.PORT || 3300, () => {
