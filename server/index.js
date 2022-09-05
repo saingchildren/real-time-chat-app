@@ -44,14 +44,16 @@ io.on("connection", (socket) => {
     });
 
     socket.on("send_msg", ({ receiver, message }) => {
-        const sender = users.find((user) => user.id === socket.id);
-        const receiverId = users.find((user) => user.username === receiver);
+        const senderData = users.find((user) => user.id === socket.id);
+        const receiverData = users.find((user) => user.username === receiver);
         console.log(
-            `${sender.username} send ${message} to ${receiverId.username}`
+            `${senderData.username} send ${message} to ${receiverData.username}`
         );
-        io.to(receiverId.id).emit("get_msg", {
-            sender: sender.username,
+        io.to(receiverData.id).emit("get_msg", {
+			receiver: receiverData.username,
+            sender: senderData.username,
             msg: message,
+			view: false 
         });
     });
 });

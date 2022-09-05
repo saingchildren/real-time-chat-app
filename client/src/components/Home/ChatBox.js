@@ -5,24 +5,7 @@ import { useContextSelector } from "use-context-selector";
 
 export default function ChatBox({ receiver, setReceiver }) {
     const [message, setMessage] = useState("");
-    const [get_msg, setGetMsg] = useState("");
-    const [sender, setSender] = useState("");
     const socket = useContextSelector(Context, (item) => item.socket);
-    const username = useContextSelector(Context, (item) => item.username);
-
-    useEffect(() => {
-        console.log("test");
-        socket.on("get_msg", ({ sender, msg }) => {
-            setGetMsg(msg);
-            setSender(sender);
-            console.log(msg);
-            console.log(sender);
-        });
-
-        return () => {
-            socket.off("get_msg");
-        };
-    }, []);
 
     const sendMessage = (e) => {
         e.preventDefault();
