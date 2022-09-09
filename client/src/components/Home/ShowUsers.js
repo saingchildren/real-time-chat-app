@@ -10,7 +10,6 @@ export default function ShowUsers() {
 	const [allUser, setAllUser] = useState([]);
 	const [allMsg, setAllMsg] = useState({});
 	const [receiver, setReceiver] = useState(false);
-	console.log(allMsg)
 
 	const sortName = (username1, username2) => {
 		return [username1, username2].sort().join("-");
@@ -18,11 +17,16 @@ export default function ShowUsers() {
 
 	const getMsg = () => {
 		socket.on("get_msg", (MsgData) => {
-			const key = sortName(username, MsgData.sender);
-			console.log(`key is ${key}`)
+			let key;
+			if (MsgData.sender === username) {
+				key = sortName(username, MsgData.receiver);
+			} else {
+				key = sortName(username, MsgData.sender);
+			}
+			console.log(`key is ${key}`);
 			setAllMsg((prev) => {
 				const temp = { ...prev };
-				console.log(temp)
+				console.log(temp);
 				if (key in temp) {
 					console.log("in");
 					temp[key] = [...temp[key], MsgData];
@@ -34,6 +38,18 @@ export default function ShowUsers() {
 			});
 		});
 	};
+
+	useEffect(() => {
+		if (receiver) {
+			const key = sortName(username, receiver);
+			const temp = { ...allMsg };
+			if (key in temp) {
+				temp[key] = temp[key].map((item) => ({ ...item, view: true }));
+			}
+
+			setAllMsg({ ...temp });
+		}
+	}, [receiver]);
 
 	const getData = () => {
 		socket.emit("load_users");
