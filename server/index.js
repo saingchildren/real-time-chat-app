@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
         console.log(
             `${senderData.username} send ${message} to ${receiverData.username}`
         );
-        io.to(receiverData.id).emit("get_msg", {
+        io.to(receiverData.id).to(senderData.id).emit("get_msg", {
 			receiver: receiverData.username,
             sender: senderData.username,
             msg: message,
